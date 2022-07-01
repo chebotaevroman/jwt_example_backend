@@ -31,4 +31,15 @@ authRouter.post("/login", (req, res) => {
   res.send({ accessToken });
 });
 
+authRouter.get("/logout", (req, res) => {
+  res.setHeader(
+    "Set-Cookie",
+    cookie.serialize("refreshToken", "", {
+      httpOnly: true,
+      maxAge: 0,
+    })
+  );
+  res.sendStatus(200);
+});
+
 module.exports = authRouter;
