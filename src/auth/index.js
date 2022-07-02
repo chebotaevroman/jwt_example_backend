@@ -5,6 +5,7 @@ const {
   getTokens,
   refreshTokenTokenAge,
   verifyAuthorizationMiddleware,
+  verifyRefreshTokenMiddleware,
 } = require("./utils");
 const { passwordSecret, fakeUser } = require("./data");
 
@@ -30,6 +31,19 @@ authRouter.post("/login", (req, res) => {
     cookie.serialize("refreshToken", refreshToken, {
       httpOnly: true,
       maxAge: refreshTokenTokenAge,
+    })
+  );
+  res.send({ accessToken });
+});
+
+authRouter.get("/refresh", verifyRefreshTokenMiddleware, (req, res) => {
+  const { accessToken, refreshToken } = getTokens(req.user.login);
+
+  res.setHeader(
+    "Set-Cookie",
+    cookie.serialize("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60,
     })
   );
   res.send({ accessToken });
